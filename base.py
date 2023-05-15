@@ -7,11 +7,15 @@ GRID_SIZE = 5
 NUM_BOMBS = 5
 # taille de chaque cellule en pixels
 CELL_SIZE = 40
+# épaisseur de la bordure en pixels
+BORDER_WIDTH = 2
 # couleur de fond pour les cellules révélées et non révélées
 REVEALED_COLOR = (200, 200, 200)
 UNREVEALED_COLOR = (50, 50, 50)
 # couleur du texte
 TEXT_COLOR = (0, 0, 0)
+# couleur de la bordure
+BORDER_COLOR = (255, 255, 255)
 
 class Cell:
     def __init__(self, is_bomb, x, y):
@@ -22,12 +26,16 @@ class Cell:
         self.y = y
 
     def draw(self, surface):
-        rect = pygame.Rect(self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-        pygame.draw.rect(surface, REVEALED_COLOR if self.revealed else UNREVEALED_COLOR, rect)
+        outer_rect = pygame.Rect(self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(surface, BORDER_COLOR, outer_rect)
+        
+        inner_rect = pygame.Rect(self.x * CELL_SIZE + BORDER_WIDTH, self.y * CELL_SIZE + BORDER_WIDTH, CELL_SIZE - 2 * BORDER_WIDTH, CELL_SIZE - 2 * BORDER_WIDTH)
+        pygame.draw.rect(surface, REVEALED_COLOR if self.revealed else UNREVEALED_COLOR, inner_rect)
+        
         if self.revealed and not self.is_bomb:
             font = pygame.font.Font(None, 24)
             text = font.render(str(self.adjacent_bombs), 1, TEXT_COLOR)
-            surface.blit(text, rect.move(CELL_SIZE // 2, CELL_SIZE // 2))
+            surface.blit(text, inner_rect.move(CELL_SIZE // 2, CELL_SIZE // 2)) 
 
 class Board:
     def __init__(self, grid_size, num_bombs):
